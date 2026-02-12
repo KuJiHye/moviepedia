@@ -23,6 +23,7 @@ https://moviepedia-kujihye.netlify.app
 - 다국어 지원
 - 외부 API 데이터 연동
 - Offset 기반 페이지네이션
+- 이미지 업로드 시 미리보기
 
 ---
 
