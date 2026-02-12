@@ -17,10 +17,12 @@ https://moviepedia-kujihye.netlify.app
 
 - 배열 데이터를 `map()`으로 렌더링한 영화 리뷰 목록
 - 상태(state)에 따라 전환되는 최신순 / 베스트순 탭
-- 리뷰 추가 / 수정 / 삭제 기능 구현
+- 리뷰 추가 / 수정 / 삭제
 - `createPortal`을 활용한 모달 기반 리뷰 작성 UI
 - `Context`를 활용한 전역 상태 관리
-- 다국어 기능 구현
+- 다국어 지원
+- 외부 API 데이터 연동
+- Offset 기반 페이지네이션
 
 ---
 

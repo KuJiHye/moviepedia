@@ -19,11 +19,6 @@ function ReviewForm({
   const t = useTranslate();
   const inputRef = useRef(null);
 
-  const submit = (formData) => {
-    const data = Object.fromEntries(formData.entries()); // Object.fromEntries로 자바스크립트 객체로 변환
-    onSubmit(data);
-  };
-
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -31,7 +26,7 @@ function ReviewForm({
   }, []);
 
   return (
-    <form className={styles.form} action={submit}>
+    <form className={styles.form} action={onSubmit}>
       <img src={placeholderImage} />
       <div className={styles.content}>
         <div className={styles.titleRating}>
