@@ -24,6 +24,9 @@ https://moviepedia-kujihye.netlify.app
 - 외부 API 데이터 연동
 - Offset 기반 페이지네이션
 - 이미지 업로드 시 미리보기
+- 더보기 및 리뷰 작성에 로딩 / 에러 처리
+  - `useActionState`를 활용한 비동기 상태 관리
+  - `useCallback`을 통한 불필요한 리렌더링 방지
 
 ---
 

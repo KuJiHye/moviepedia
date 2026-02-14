@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReviewList from "./components/ReviewList";
 import Modal from "./components/Modal";
 import ReviewForm from "./components/ReviewForm";
@@ -18,13 +18,16 @@ function App() {
   const [keyword, setKeyword] = useState("");
   const [isCreateReviewOpen, setIsCreateReviewOpen] = useState(false);
   const [hasNext, setHasNext] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const filteredItems = items.filter( // filter로 원하는 조건을 만족하는 요소들만 필터링해서 새로운 배열 생성
     (item) => item.title.includes(keyword) // includes로 문자열에 특정 문자열이 포함되는지 확인
   );
 
   // 데이터를 받아 올 비동기 함수
-  const handleLoad = async (orderParam) => {
+  // 매번 새롭게 생성되는 함수는 디펜던시 리스트로 쓸 수 없기 때문에 useCallback 훅으로 함수를 고정
+  const handleLoad = useCallback(async (orderParam) => {
     const response = await axios.get("/film-reviews", {
       params: {
         // 쿼리 스트링 추가
@@ -35,18 +38,32 @@ function App() {
     const { reviews, paging } = response.data;
     setItems(reviews);
     setHasNext(paging.hasNext);
-  };
+  }, []);
 
   // 데이터를 더 받아 오기 위한 함수
   const handleLoadMore = async () => {
-    const response = await axios.get("/film-reviews", {
-      params: {
-        order,
-        offset: items.length,
-        limit: LIMIT,
-      },
-    });
-    const { reviews, paging } = response.data;
+    let data = null;
+    setIsLoading(true);
+    setError(null);
+
+    try { // 로딩 처리
+      const response = await axios.get("/film-reviews", {
+        params: {
+          order,
+          offset: items.length,
+          limit: LIMIT,
+        },
+      });
+      data = response.data;
+    } catch (error) { // 에러 처리
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+
+    if (!data) return; // 에러가 나서 데이터가 없을 경우 함수 종료
+    
+    const { reviews, paging } = data;
     setItems((prevItems) => [...prevItems, ...reviews]);
     setHasNext(paging.hasNext);
   };
@@ -81,7 +98,7 @@ function App() {
   // 무한 루프 방지
   useEffect(() => {
     handleLoad(order);
-  }, [order]);
+  }, [order, handleLoad]); // 빠짐 없는 디펜던시 규칙을 지키기 위해 디펜던시 추가
 
   return (
     <Layout>
@@ -125,7 +142,8 @@ function App() {
         onUpdate={handleUpdate}
         onDelete={handleDelete}
       />
-      {hasNext && <Button onClick={handleLoadMore}>{t("load more")}</Button>}
+      {hasNext && <Button disabled={isLoading} onClick={handleLoadMore}>{t("load more")}</Button>}
+      {error && <div>오류가 발생했습니다.</div>}
     </Layout>
   );
 }
